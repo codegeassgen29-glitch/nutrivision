@@ -1,0 +1,27 @@
+# .gitignore
+# ---------------------------------------------------------
+# Tells Git which files/folders to NEVER track or commit.
+# This keeps secrets, generated files, and huge dependency
+# folders out of your repository.
+# ---------------------------------------------------------
+
+# Secrets - never commit real environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# OS/editor noise
+.DS_Store
+.vscode/
+*.log
+
+# Database data (in case a local Postgres data dir ever appears here)
+postgres_data/

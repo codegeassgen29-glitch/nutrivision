@@ -1,0 +1,34 @@
+# requirements.txt
+# ---------------------------------------------------------
+# Every library our backend needs, with an exact version pinned.
+# Pinning versions means "this project was built and tested with
+# EXACTLY these versions" - so it won't silently break when a
+# library releases a new version with different behavior later.
+#
+# We install these with: pip install -r requirements.txt
+# ---------------------------------------------------------
+
+# --- Web framework ---
+fastapi==0.115.0        # the core web framework we build our API with
+uvicorn[standard]==0.31.0  # the actual server that RUNS our FastAPI app
+
+# --- Data validation ---
+pydantic==2.9.2          # validates request/response data shapes
+pydantic-settings==2.5.2 # lets us load config from .env files cleanly
+
+# --- Database ---
+sqlalchemy==2.0.35        # ORM - lets us work with the DB using Python objects instead of raw SQL
+psycopg2-binary==2.9.9    # the actual driver that talks to PostgreSQL
+alembic==1.13.3            # manages database schema migrations (version control for your DB structure)
+
+# --- Authentication (added in Milestone 3, listed now so setup is one step) ---
+python-jose[cryptography]==3.3.0  # creates and verifies JWT tokens
+passlib[bcrypt]==1.7.4             # securely hashes passwords
+
+# --- File uploads ---
+python-multipart==0.0.12  # required by FastAPI to handle file/form uploads
+
+# NOTE: Computer vision libraries (torch, ultralytics/YOLOv8, opencv, pillow)
+# are intentionally NOT added yet. We'll add them in Milestone 5 when we
+# actually build the detection pipeline - installing heavy ML libraries
+# before we need them just slows down every install/test cycle until then.

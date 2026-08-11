@@ -1,0 +1,11 @@
+/* src/index.css
+   ---------------------------------------------------------
+   These three lines inject Tailwind's generated CSS:
+   - base: resets browser default styles (margins, fonts, etc.)
+   - components: reusable Tailwind component classes
+   - utilities: the actual utility classes we use everywhere,
+     like "flex", "p-4", "text-blue-500"
+   --------------------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

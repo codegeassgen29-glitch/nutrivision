@@ -1,0 +1,65 @@
+# docker-compose.yml
+# ---------------------------------------------------------
+# This file defines and connects ALL our services (containers)
+# so they start together with ONE command: `docker compose up`
+#
+# Right now we have three services:
+#   1. db       - PostgreSQL database
+#   2. backend  - our FastAPI server
+#   3. frontend - our React dev server
+#
+# Docker Compose creates a private network so these containers
+# can find each other BY SERVICE NAME (e.g. the backend connects
+# to the database using the hostname "db", not "localhost").
+# ---------------------------------------------------------
+services:
+
+  db:
+    image: postgres:16-alpine   # official, lightweight PostgreSQL image
+    restart: unless-stopped
+    environment:
+      # These create the initial database, username, and password
+      # when the container first starts. Values come from .env
+      # so they're never hardcoded here.
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"   # host_port:container_port - lets you inspect the DB with a local tool if you want
+    volumes:
+      # This persists database data on your actual machine, so
+      # your data survives even if you delete and recreate the container.
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend      # look for a Dockerfile in ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Note: hostname is "db" - Docker Compose's internal DNS
+      # resolves that to the db container automatically.
+    volumes:
+      # Mounts our local backend code into the container, so code
+      # changes on your machine show up instantly (thanks to --reload).
+      - ./backend:/app
+    depends_on:
+      - db   # wait for the db service to start first
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules   # prevents host node_modules from overwriting container's
+    depends_on:
+      - backend
+
+# Named volume for persisting Postgres data between container restarts.
+volumes:
+  postgres_data:
