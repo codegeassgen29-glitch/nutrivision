@@ -8,6 +8,7 @@
 # It doesn't cook anything itself - it just sets up the kitchen
 # and tells each station (route file) where to stand.
 # ---------------------------------------------------------
+# NOTE: Ensure FastAPI is installed via: pip install fastapi uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
