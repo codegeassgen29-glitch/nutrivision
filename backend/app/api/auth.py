@@ -60,3 +60,12 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": str(user.id)})
 
     return {"access_token": access_token, "token_type": "bearer"}
+from app.core.security import get_current_user
+
+@router.get("/me", response_model=UserOut)
+def get_me(current_user: User = Depends(get_current_user)):
+    """
+    A protected route — only accessible with a valid JWT token.
+    Returns the currently logged-in user's info.
+    """
+    return current_user
