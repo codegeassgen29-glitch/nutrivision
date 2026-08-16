@@ -17,7 +17,7 @@ from app.core.security import get_current_user
 from app.models.user import User
 from app.models.meal import Meal
 from app.schemas.meal import MealOut
-
+from app.data.nutrition_table import get_nutrition
 router = APIRouter(prefix="/meals", tags=["Meals"])
 
 # Folder where uploaded images get saved.
@@ -68,10 +68,17 @@ def upload_meal_image(
 
     # Save each detected food as a row in the database, linked to this meal
     for item in detected_items:
+        # Look up nutrition data for this food (may be None if unknown)
+        nutrition = get_nutrition(item["food_name"])
+
         detected_food = DetectedFood(
             meal_id=new_meal.id,
             food_name=item["food_name"],
             confidence=item["confidence"],
+            calories=nutrition["calories"] if nutrition else None,
+            protein=nutrition["protein"] if nutrition else None,
+            carbs=nutrition["carbs"] if nutrition else None,
+            fat=nutrition["fat"] if nutrition else None,
         )
         db.add(detected_food)
 
