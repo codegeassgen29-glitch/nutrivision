@@ -10,7 +10,8 @@ import os
 import uuid
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
-
+from app.services.detection_service import detect_food
+from app.models.detected_food import DetectedFood
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
@@ -58,5 +59,23 @@ def upload_meal_image(
     db.add(new_meal)
     db.commit()
     db.refresh(new_meal)
+    # ---------------------------------------------------------
+    # Run AI food detection on the uploaded image
+    # ---------------------------------------------------------
+    # This calls our YOLOv8 model (see services/detection_service.py)
+    # and gets back a list of detected foods with confidence scores.
+    detected_items = detect_food(file_path)
+
+    # Save each detected food as a row in the database, linked to this meal
+    for item in detected_items:
+        detected_food = DetectedFood(
+            meal_id=new_meal.id,
+            food_name=item["food_name"],
+            confidence=item["confidence"],
+        )
+        db.add(detected_food)
+
+    db.commit()
+    db.refresh(new_meal)  # reload so new_meal.detected_foods includes the new rows
 
     return new_meal

@@ -5,7 +5,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-
+from fastapi.security import OAuth2PasswordRequestForm
 from app.core.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserOut
@@ -43,15 +43,19 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
+from fastapi.security import OAuth2PasswordRequestForm
 
 @router.post("/login")
-def login(email: str, password: str, db: Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
     Verifies email + password, and if correct, returns a JWT access token.
+    Uses OAuth2PasswordRequestForm so Swagger's "Authorize" button works
+    directly — it sends 'username' and 'password' as form fields.
+    We treat the 'username' field as the user's email.
     """
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.email == form_data.username).first()
 
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -60,6 +64,8 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": str(user.id)})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+    
 from app.core.security import get_current_user
 
 @router.get("/me", response_model=UserOut)
