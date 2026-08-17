@@ -18,6 +18,10 @@ from app.models.user import User
 from app.models.meal import Meal
 from app.schemas.meal import MealOut
 from app.data.nutrition_table import get_nutrition
+from datetime import date
+from typing import Optional
+from fastapi import Query
+from sqlalchemy import func
 router = APIRouter(prefix="/meals", tags=["Meals"])
 
 # Folder where uploaded images get saved.
@@ -86,3 +90,33 @@ def upload_meal_image(
     db.refresh(new_meal)  # reload so new_meal.detected_foods includes the new rows
 
     return new_meal
+@router.get("", response_model=list[MealOut])
+def get_meal_history(
+    start_date: Optional[date] = Query(None, description="Filter meals from this date onward"),
+    end_date: Optional[date] = Query(None, description="Filter meals up to this date"),
+    limit: int = Query(20, ge=1, le=100, description="Max number of meals to return"),
+    offset: int = Query(0, ge=0, description="Number of meals to skip (for pagination)"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Returns the logged-in user's meal history, newest first.
+    Supports optional date filtering and pagination.
+    """
+    query = db.query(Meal).filter(Meal.user_id == current_user.id)
+
+    # Apply date filters only if provided
+    if start_date:
+        query = query.filter(func.date(Meal.created_at) >= start_date)
+    if end_date:
+        query = query.filter(func.date(Meal.created_at) <= end_date)
+
+    meals = (
+        query
+        .order_by(Meal.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return meals
