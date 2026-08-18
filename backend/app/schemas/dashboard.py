@@ -18,3 +18,9 @@ class DashboardSummary(BaseModel):
     today: DailySummary
     recent_meals: list[MealOut]
     weekly_calories: list[DailySummary]
+
+    class DashboardSummary(BaseModel):
+     today: DailySummary
+    recent_meals: list[MealOut]
+    weekly_calories: list[DailySummary]
+    recommendations: list[str]

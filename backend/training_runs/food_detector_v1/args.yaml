@@ -1,6 +1,6 @@
 task: detect
 mode: train
-model: yolov8n.pt
+model: /app/training_runs/food_detector_v1/weights/last.pt
 data: /app/training_data/data.yaml
 epochs: 50
 time: null
@@ -11,7 +11,7 @@ save: true
 save_period: -1
 cache: false
 device: ''
-workers: 8
+workers: 0
 project: /app/training_runs
 name: food_detector_v1
 exist_ok: false
@@ -25,7 +25,7 @@ single_cls: false
 rect: false
 cos_lr: false
 close_mosaic: 10
-resume: false
+resume: /app/training_runs/food_detector_v1/weights/last.pt
 amp: true
 fraction: 1.0
 profile: false
@@ -78,7 +78,7 @@ momentum: 0.937
 weight_decay: 0.0005
 warmup_epochs: 3.0
 warmup_momentum: 0.8
-warmup_bias_lr: 0.1
+warmup_bias_lr: 0.0
 distill_model: null
 dis: 6.0
 box: 7.5

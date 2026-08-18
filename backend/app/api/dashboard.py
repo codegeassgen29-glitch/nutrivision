@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-
+from app.services.recommendation_service import generate_recommendations
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
@@ -74,9 +74,15 @@ def get_dashboard_summary(
         get_daily_totals(db, current_user.id, today - timedelta(days=i))
         for i in range(6, -1, -1)  # 6 days ago -> today
     ]
-
+    recommendations = generate_recommendations(
+        total_calories=today_summary.total_calories,
+        total_protein=today_summary.total_protein,
+        total_carbs=today_summary.total_carbs,
+        total_fat=today_summary.total_fat,
+    )
     return DashboardSummary(
         today=today_summary,
         recent_meals=recent_meals,
         weekly_calories=weekly_calories,
+        recommendations=recommendations,
     )
