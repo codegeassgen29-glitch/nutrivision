@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import meal
 from app.api import auth
 from app.api import dashboard
+from app.api import users
 
 app = FastAPI(
     title="NutriVision AI",
@@ -21,6 +22,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(meal.router)
 app.include_router(dashboard.router)
+app.include_router(users.router)
 # ---------------------------------------------------------
 # Register route modules
 # ---------------------------------------------------------

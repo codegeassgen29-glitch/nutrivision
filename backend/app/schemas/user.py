@@ -1,11 +1,13 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+
 # This is what a client sends us when signing up
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: str | None = None
+
 
 # This is what we send back to the client (never includes password)
 class UserOut(BaseModel):
@@ -16,3 +18,14 @@ class UserOut(BaseModel):
 
     class Config:
         from_attributes = True  # lets Pydantic read directly from SQLAlchemy objects
+
+
+# Fields a user can update on their own profile
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+
+
+# Data needed to change a password
+class PasswordUpdate(BaseModel):
+    current_password: str
+    new_password: str
