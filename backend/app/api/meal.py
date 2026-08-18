@@ -22,6 +22,8 @@ from datetime import date
 from typing import Optional
 from fastapi import Query
 from sqlalchemy import func
+from fastapi import Path
+from app.schemas.detected_food import DetectedFoodUpdate
 router = APIRouter(prefix="/meals", tags=["Meals"])
 
 # Folder where uploaded images get saved.
@@ -120,3 +122,78 @@ def get_meal_history(
     )
 
     return meals
+
+@router.delete("/{meal_id}", status_code=status.HTTP_200_OK)
+def delete_meal(
+    meal_id: int = Path(..., description="ID of the meal to delete"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Deletes a meal (and its detected foods, via cascade) along with
+    its uploaded image file. Only the meal's owner can delete it.
+    """
+    meal = db.query(Meal).filter(Meal.id == meal_id).first()
+
+    if not meal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Meal not found")
+
+    # Ownership check - critical security step
+    if meal.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this meal")
+
+    # Delete the image file from disk, if it exists
+    full_image_path = os.path.join(os.path.dirname(__file__), "..", meal.image_path)
+    if os.path.exists(full_image_path):
+        os.remove(full_image_path)
+
+    db.delete(meal)  # cascade="all, delete-orphan" on the model also removes detected_foods
+    db.commit()
+
+    return {"message": "Meal deleted successfully"}
+
+
+@router.put("/{meal_id}/foods/{food_id}", response_model=MealOut)
+def update_detected_food(
+    meal_id: int,
+    food_id: int,
+    update_data: DetectedFoodUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Lets a user manually correct a detected food entry
+    (e.g. fix a misclassification, or adjust nutrition values).
+    """
+    meal = db.query(Meal).filter(Meal.id == meal_id).first()
+
+    if not meal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Meal not found")
+
+    if meal.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to edit this meal")
+
+    food = db.query(DetectedFood).filter(
+        DetectedFood.id == food_id,
+        DetectedFood.meal_id == meal_id,
+    ).first()
+
+    if not food:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Detected food not found for this meal")
+
+    # Only update fields the client actually provided
+    if update_data.food_name is not None:
+        food.food_name = update_data.food_name
+    if update_data.calories is not None:
+        food.calories = update_data.calories
+    if update_data.protein is not None:
+        food.protein = update_data.protein
+    if update_data.carbs is not None:
+        food.carbs = update_data.carbs
+    if update_data.fat is not None:
+        food.fat = update_data.fat
+
+    db.commit()
+    db.refresh(meal)
+
+    return meal

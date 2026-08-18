@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class DetectedFoodOut(BaseModel):
     id: int
     food_name: str
@@ -11,3 +12,11 @@ class DetectedFoodOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class DetectedFoodUpdate(BaseModel):
+    food_name: str | None = None
+    calories: float | None = None
+    protein: float | None = None
+    carbs: float | None = None
+    fat: float | None = None
