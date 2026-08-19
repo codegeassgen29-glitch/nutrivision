@@ -23,7 +23,7 @@ COCO_FOOD_CLASSES = {
     "carrot", "pizza", "donut", "cake", "hot dog",
 }
 
-CONFIDENCE_THRESHOLD = 0.4
+CONFIDENCE_THRESHOLD = 0.6
 CUSTOM_CONFIDENCE_THRESHOLD = 0.3  # slightly lower - our custom model is smaller/less mature
 
 
