@@ -20,7 +20,14 @@ NUTRITION_TABLE = {
     "donut":     {"calories": 452, "protein": 4.9, "carbs": 51.0, "fat": 25.0},
     "cake":      {"calories": 350, "protein": 5.0, "carbs": 50.0, "fat": 15.0},
     "hot dog":   {"calories": 290, "protein": 10.0, "carbs": 22.0, "fat": 18.0},
+
+    # Custom-trained classes (Indian food, per typical serving)
+    "chapati":      {"calories": 120, "protein": 3.0, "carbs": 18.0, "fat": 3.5},
+    "dal makhni":   {"calories": 280, "protein": 9.0, "carbs": 26.0, "fat": 16.0},
+    "fried rice":   {"calories": 333, "protein": 6.0, "carbs": 45.0, "fat": 14.0},
+    "kadai paneer": {"calories": 320, "protein": 14.0, "carbs": 12.0, "fat": 24.0},
 }
+
 
 
 def get_nutrition(food_name: str) -> dict | None:
