@@ -25,3 +25,8 @@ dist/
 
 # Database data (in case a local Postgres data dir ever appears here)
 postgres_data/
+# Training datasets and run artifacts (large binary files, not source code)
+backend/training_data/
+backend/biryani-dataset/
+backend/indian-food-detection-v2/
+backend/training_runs/
