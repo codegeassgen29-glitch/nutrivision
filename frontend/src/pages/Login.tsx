@@ -4,6 +4,7 @@
 import { useState, FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AuroraBackground from '../components/AuroraBackground'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -29,9 +30,10 @@ export default function Login() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+   return (
+    <div className="relative min-h-screen bg-[#0a0f0d] text-white flex items-center justify-center px-4 overflow-hidden">
+      <AuroraBackground />
+      <div className="relative w-full max-w-sm">
         <h1 className="text-3xl font-bold mb-6 text-center">Log In</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">

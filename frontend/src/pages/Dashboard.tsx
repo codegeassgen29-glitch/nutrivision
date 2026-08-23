@@ -40,8 +40,6 @@ interface DashboardData {
   recommendations: string[]
 }
 
-// Rough daily targets used just for the visual progress rings/bars.
-// Later this can come from a real user-set goal instead of a constant.
 const TARGETS = { calories: 2650, protein: 190, carbs: 300, fat: 78 }
 
 export default function Dashboard() {
@@ -85,57 +83,56 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#0a0f0d] text-white">
       {/* Top bar */}
-      <div className="flex justify-between items-center px-8 py-5 border-b border-white/5">
+      <div className="flex justify-between items-center px-4 sm:px-8 py-4 sm:py-5 border-b border-white/5">
         <Link to="/" className="flex items-center gap-2">
-          <span className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-xs font-bold text-black">
+          <span className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-xs font-bold text-black flex-shrink-0">
             N
           </span>
-          <span className="font-semibold">NutriVision AI</span>
+          <span className="font-semibold hidden md:inline">NutriVision AI</span>
         </Link>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500 hidden sm:inline">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-sm text-gray-500 hidden md:inline">
             {user?.full_name || user?.email}
           </span>
           <Link
             to="/history"
-            className="text-sm text-gray-400 hover:text-white transition px-3 py-1.5"
+            className="text-sm text-gray-400 hover:text-white transition px-2 sm:px-3 py-1.5 hidden xs:inline"
           >
             History
           </Link>
           <Link
             to="/upload"
-            className="flex items-center gap-1.5 bg-emerald-400 hover:bg-emerald-300 text-black text-sm font-semibold px-4 py-2 rounded-full transition"
+            className="flex items-center gap-1.5 bg-emerald-400 hover:bg-emerald-300 text-black text-xs sm:text-sm font-semibold px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition whitespace-nowrap"
           >
             Scan a meal
           </Link>
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-500 hover:text-white transition px-2"
+            className="text-sm text-gray-500 hover:text-white transition px-1 sm:px-2"
           >
             Log out
           </button>
         </div>
       </div>
 
-      <div className="px-8 py-8 max-w-6xl mx-auto">
+      <div className="px-4 sm:px-8 py-8 max-w-6xl mx-auto">
         {/* Greeting */}
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-3 mb-8">
           <div>
             <p className="text-sm text-gray-500 mb-1">
               {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
             </p>
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-2xl sm:text-3xl font-bold">
               Welcome back, <span className="text-emerald-400">{user?.full_name?.split(' ')[0] || 'there'}</span>
             </h1>
           </div>
-          <div className="bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-sm font-medium px-4 py-2 rounded-full">
+          <div className="bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 text-sm font-medium px-4 py-2 rounded-full self-start sm:self-auto">
             {Math.round(caloriesLeft)} kcal left today
           </div>
         </div>
 
         {/* Top row: calorie ring + macros */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-          {/* Calorie ring */}
           <div className="bg-[#0f1613] border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center">
             <CalorieRing value={data.today.total_calories} target={TARGETS.calories} pct={caloriePct} />
             <p className="text-xs text-gray-500 mt-3">
@@ -143,32 +140,13 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Macro cards */}
-          <MacroCard
-            label="Protein"
-            icon="●"
-            color="emerald"
-            value={data.today.total_protein}
-            target={TARGETS.protein}
-          />
-          <MacroCard
-            label="Carbs"
-            icon="●"
-            color="sky"
-            value={data.today.total_carbs}
-            target={TARGETS.carbs}
-          />
-          <MacroCard
-            label="Fat"
-            icon="●"
-            color="amber"
-            value={data.today.total_fat}
-            target={TARGETS.fat}
-          />
+          <MacroCard label="Protein" icon="●" color="emerald" value={data.today.total_protein} target={TARGETS.protein} />
+          <MacroCard label="Carbs" icon="●" color="sky" value={data.today.total_carbs} target={TARGETS.carbs} />
+          <MacroCard label="Fat" icon="●" color="amber" value={data.today.total_fat} target={TARGETS.fat} />
         </div>
 
         {/* Weekly chart */}
-        <div className="bg-[#0f1613] border border-white/5 rounded-2xl p-6 mb-6">
+        <div className="bg-[#0f1613] border border-white/5 rounded-2xl p-4 sm:p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="font-semibold">Weekly intake</h2>
@@ -192,7 +170,7 @@ export default function Dashboard() {
 
         {/* Bottom row: recent meals + AI coach */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-[#0f1613] border border-white/5 rounded-2xl p-6">
+          <div className="lg:col-span-2 bg-[#0f1613] border border-white/5 rounded-2xl p-4 sm:p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold">Recent meals</h2>
               <Link to="/upload" className="text-emerald-400 text-sm hover:underline">
@@ -211,14 +189,14 @@ export default function Dashboard() {
                   return (
                     <div
                       key={meal.id}
-                      className="flex justify-between items-center py-3 border-b border-white/5 last:border-0"
+                      className="flex justify-between items-center gap-3 py-3 border-b border-white/5 last:border-0"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400/20 to-teal-500/20 flex items-center justify-center text-lg">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400/20 to-teal-500/20 flex items-center justify-center text-lg flex-shrink-0">
                           🍽️
                         </div>
-                        <div>
-                          <p className="font-medium text-sm capitalize">{foodNames}</p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm capitalize truncate">{foodNames}</p>
                           <p className="text-xs text-gray-500">
                             {new Date(meal.created_at).toLocaleString(undefined, {
                               month: 'short',
@@ -229,7 +207,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-emerald-400 text-sm font-medium">{Math.round(totalCal)} kcal</span>
+                      <span className="text-emerald-400 text-sm font-medium flex-shrink-0">{Math.round(totalCal)} kcal</span>
                     </div>
                   )
                 })}
@@ -237,8 +215,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* AI coach card */}
-          <div className="bg-[#0f1613] border border-white/5 rounded-2xl p-6">
+          <div className="bg-[#0f1613] border border-white/5 rounded-2xl p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-emerald-400">✦</span>
               <h2 className="font-semibold">AI coach</h2>

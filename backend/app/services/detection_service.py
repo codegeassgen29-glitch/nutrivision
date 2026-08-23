@@ -3,19 +3,19 @@
 # We run TWO models together:
 # 1. A PRETRAINED model (COCO) - recognizes general foods like pizza,
 #    banana, sandwich, etc.
-# 2. Our CUSTOM-TRAINED model - recognizes specific dishes we trained it
-#    on: chapati, dal makhni, fried rice, kadai paneer.
-#
-# Running both gives broader coverage than either alone. Later, as we
-# add more custom classes, the custom model's coverage will grow.
+# 2. Our CUSTOM-TRAINED model (v2) - recognizes 21 Indian food classes.
+#    Trained on a merged dataset from multiple sources. See training
+#    notes: some classes (Chole, chicken, palak_paneer) perform well;
+#    others (kadai_paneer, roti, samosa) are weak and need more/better
+#    training data in a future iteration.
 
 from ultralytics import YOLO
 
 # Pretrained model - loaded once at import time
 pretrained_model = YOLO("yolov8n.pt")
 
-# Our custom-trained model - loaded once at import time
-custom_model = YOLO("/app/models/food_detector_v1.pt")
+# Our custom-trained model (v2, 21 classes) - loaded once at import time
+custom_model = YOLO("/app/models/food_detector_v2.pt")
 
 # COCO classes we consider "food"
 COCO_FOOD_CLASSES = {
@@ -24,7 +24,7 @@ COCO_FOOD_CLASSES = {
 }
 
 CONFIDENCE_THRESHOLD = 0.6
-CUSTOM_CONFIDENCE_THRESHOLD = 0.3  # slightly lower - our custom model is smaller/less mature
+CUSTOM_CONFIDENCE_THRESHOLD = 0.3
 
 
 def detect_food(image_path: str) -> list[dict]:
@@ -49,7 +49,7 @@ def detect_food(image_path: str) -> list[dict]:
                 "confidence": round(confidence, 3),
             })
 
-    # --- Custom model (our trained Indian food classes) ---
+    # --- Custom model (our trained Indian food classes, v2: 21 classes) ---
     custom_results = custom_model(image_path)
     custom_result = custom_results[0]
 

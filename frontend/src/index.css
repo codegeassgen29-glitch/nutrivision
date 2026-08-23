@@ -9,3 +9,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom animation delay utilities for the AuroraBackground component.
+   Tailwind doesn't include these by default, so we define them here. */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
